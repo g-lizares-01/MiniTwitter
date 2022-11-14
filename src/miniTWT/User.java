@@ -63,6 +63,7 @@ public class User extends Subject implements TreeEntry, Observer, Visitable {
 		return latestTweetText;
 	}
 	
+	//format the tweets for posting on the news feed
 	public String formatLatestTweet() {
 		return getComponentId() + ": " + latestTweetText;
 	}
@@ -87,7 +88,6 @@ public class User extends Subject implements TreeEntry, Observer, Visitable {
 
 	@Override
 	public void updateObservers(String tweet) {
-		
 		addToFeed(tweet);
 		for(User u : getFollowers()) {
 			update(u, tweet);
@@ -100,6 +100,7 @@ public class User extends Subject implements TreeEntry, Observer, Visitable {
 		uv.setVisible(true);
 	}
 	
+	//allows for reloading of individual users' news feeds
 	public void buildNewsFeed() {
 		uv.buildNewsFeed();
 	}

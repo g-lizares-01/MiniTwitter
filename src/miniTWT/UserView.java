@@ -33,15 +33,18 @@ public class UserView extends JFrame {
 	private User currentUser;//, targetUser;
 	private HashMap<String, User> allUsers = AdminControlPanel.getAllUsers();
 	
+	//Declare formatting tools for easier access
 	Font buttonFont = new Font("monospaced", Font.BOLD, 18);
 	
 	Color darkGray = new Color(38, 38, 38);
 	Color lightBlue = new Color(175, 215, 250);
 	Color darkBlue = new Color(5, 51, 92);
 	
+	//layout the User View panel
 	public UserView(User u) {
 		currentUser = u.getUser();
 		
+		//Frame basics
 		setTitle(u.getComponentId().toString() + "'s User View");
 		setSize(450, 600);
 		setResizable(false);
@@ -52,12 +55,14 @@ public class UserView extends JFrame {
 		panel.setBackground(darkGray);
 		setContentPane(panel);
 		
+		//Text field to follow user
 		userToFollow = new JTextField();
 		userToFollow.setBounds(10, 10, 270, 40);
 		userToFollow.setFont(buttonFont);
 		userToFollow.setToolTipText("Enter the name of the User you want to follow.");
 		panel.add(userToFollow);
 		
+		//Button to follow user
 		followUser = new JButton("Follow");
 		followUser.setBounds(290, 10, 135, 40);
 		followUser.setFont(buttonFont);
@@ -66,13 +71,16 @@ public class UserView extends JFrame {
 		followUser.setFocusable(false);
 		panel.add(followUser);
 		
+		//label for following list
 		followingLabel = new JLabel("Users you are following:");
 		followingLabel.setFont(buttonFont);
 		followingLabel.setBounds(10, 30, 415, 60);
 		followingLabel.setForeground(lightBlue);
 		panel.add(followingLabel);
 		
+		//initialize display frame for following list
 		followingLM = new DefaultListModel<String>();
+		//reload the existing following list if applicable
 		if(!currentUser.getFollowing().isEmpty()) 
 			for(int i = 0; i < currentUser.getFollowing().size(); i++) 
 				followingLM.add(0, currentUser.getFollowing().get(i).getComponentId());
@@ -86,12 +94,14 @@ public class UserView extends JFrame {
 		scrollFollowing.setBounds(10, 75, 415, 170);
 		panel.add(scrollFollowing);
 		
+		//text field for new tweets
 		writeTweet = new JTextField();
 		writeTweet.setBounds(10, 255, 270, 40);
 		writeTweet.setFont(buttonFont);
 		writeTweet.setToolTipText("Tweet something to your followers!");
 		panel.add(writeTweet);
 		
+		//button to post new tweets
 		postTweet = new JButton("Tweet");
 		postTweet.setBounds(290, 255, 135, 40);
 		postTweet.setFont(buttonFont);
@@ -100,12 +110,14 @@ public class UserView extends JFrame {
 		postTweet.setFocusable(false);
 		panel.add(postTweet);
 		
+		//label for news feed
 		feedLabel = new JLabel("Your news feed:");
 		feedLabel.setFont(buttonFont);
 		feedLabel.setForeground(lightBlue);
 		feedLabel.setBounds(10, 275, 415, 60);
 		panel.add(feedLabel);
 		
+		//initialize display frame for news feed
 		feedLM = new DefaultListModel<String>();
 		if(!currentUser.getFeed().isEmpty()) 
 			for(int i = 0; i < currentUser.getFeed().size(); i++) 
@@ -126,6 +138,7 @@ public class UserView extends JFrame {
 		JOptionPane.showMessageDialog(null, msg);
 	}
 	
+	//"reload" function to update when new users are followed
 	private void buildFollowingList() {
 		followingLM.removeAllElements();
 		for(int i = 0; i < currentUser.getFollowing().size(); i++) 
@@ -166,6 +179,7 @@ public class UserView extends JFrame {
 		
 	}
 	
+	//"reload" function for when new tweets are posted
 	public void buildNewsFeed() {
 		feedLM.removeAllElements();
 
@@ -192,6 +206,7 @@ public class UserView extends JFrame {
 				popUp("Tweet content cannot be empty! Enter a message\n"
 						+ "to share it with your followers!");
 			else {
+				//format tweet, add to user's own feed, as well as followers' feeds
 				currentUser.addMyTweets(tweetContent);
 				currentUser.setLatestTweet();
 				tweetText = currentUser.formatLatestTweet();
@@ -205,6 +220,7 @@ public class UserView extends JFrame {
 				
 				buildNewsFeed();
 				
+				//cycle through the user's followers and visually refresh their news feed
 				for(User f : currentUser.getFollowers()) 
 					f.buildNewsFeed();
 
