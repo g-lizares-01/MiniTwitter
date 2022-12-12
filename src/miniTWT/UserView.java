@@ -21,7 +21,7 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class UserView extends JFrame {
 	private JPanel panel;
-	private JLabel followingLabel, feedLabel;
+	private JLabel followingLabel, feedLabel, creationTimeLabel, updateTimeLabel;
 	private JTextField userToFollow, writeTweet;
 	private JButton followUser, postTweet;
 	private JScrollPane scrollFollowing, scrollFeed;
@@ -30,11 +30,12 @@ public class UserView extends JFrame {
 	private DefaultListModel<String> followingLM; 
 	private DefaultListModel<String> feedLM;
 	private String currentUserId, targetId, tweetContent, tweetText;
-	private User currentUser;//, targetUser;
+	private User currentUser;
 	private HashMap<String, User> allUsers = AdminControlPanel.getAllUsers();
 	
 	//Declare formatting tools for easier access
 	Font buttonFont = new Font("monospaced", Font.BOLD, 18);
+	Font timeFont = new Font("monospaced", Font.BOLD, 14);
 	
 	Color darkGray = new Color(38, 38, 38);
 	Color lightBlue = new Color(175, 215, 250);
@@ -46,7 +47,7 @@ public class UserView extends JFrame {
 		
 		//Frame basics
 		setTitle(u.getComponentId().toString() + "'s User View");
-		setSize(450, 600);
+		setSize(450, 630);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
@@ -131,6 +132,21 @@ public class UserView extends JFrame {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFeed.setBounds(10, 320, 415, 230);
 		panel.add(scrollFeed);
+		
+		//label for creation time
+		creationTimeLabel = new JLabel("Creation time: " + currentUser.getCreationTime());
+		creationTimeLabel.setFont(timeFont);
+		creationTimeLabel.setForeground(lightBlue);
+		creationTimeLabel.setBounds(10, 555, 415, 15);
+		panel.add(creationTimeLabel);
+		
+		//label for last update time
+		updateTimeLabel = new JLabel("Last update time: ");
+		updateTimeLabel.setFont(timeFont);
+		updateTimeLabel.setForeground(lightBlue);
+		updateTimeLabel.setBounds(10, 570, 415, 15);
+		panel.add(updateTimeLabel);
+
 	}
 	
 	//Allows easy creation of pop up messages
@@ -195,6 +211,13 @@ public class UserView extends JFrame {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollFeed.setBounds(10, 320, 415, 230);
 		panel.add(scrollFeed);
+		
+		updateTimeLabel.setText("");
+		updateTimeLabel = new JLabel("Last update time: " + currentUser.getUpdateTime());
+		updateTimeLabel.setFont(timeFont);
+		updateTimeLabel.setForeground(lightBlue);
+		updateTimeLabel.setBounds(10, 570, 415, 15);
+		panel.add(updateTimeLabel);
 	}
 
 	//ActionListener for Tweet Button
@@ -221,8 +244,9 @@ public class UserView extends JFrame {
 				buildNewsFeed();
 				
 				//cycle through the user's followers and visually refresh their news feed
-				for(User f : currentUser.getFollowers()) 
+				for(User f : currentUser.getFollowers()) {
 					f.buildNewsFeed();
+				}
 
 				
 				writeTweet.setText(null);

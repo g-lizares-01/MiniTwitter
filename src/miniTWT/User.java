@@ -13,10 +13,10 @@ import java.util.ArrayList;
 
 public class User extends Subject implements TreeEntry, Observer, Visitable {
 	private String userId, latestTweetText;
+	private long creationTime, updateTime;
 	private ArrayList<String> newsFeed, myTweets;
 	private ArrayList<User> followers, following;
 	private UserView uv;
-	//private HashMap<String, User> allUsers = AdminControlPanel.getAllUsers();
 
 	public User(String uid) {
 		userId = uid;
@@ -24,6 +24,7 @@ public class User extends Subject implements TreeEntry, Observer, Visitable {
 		following = new ArrayList<User>();
 		newsFeed = new ArrayList<String>();
 		myTweets = new ArrayList<String>();
+		creationTime = System.currentTimeMillis();
 	}
 	
 	public User getUser() {
@@ -32,6 +33,10 @@ public class User extends Subject implements TreeEntry, Observer, Visitable {
 	
 	public String getComponentId() {
 		return userId;
+	}
+	
+	public long getCreationTime() {
+		return creationTime;
 	}
 	
 	public void addFollowing(User u) {
@@ -85,12 +90,26 @@ public class User extends Subject implements TreeEntry, Observer, Visitable {
 	public void update(User u, String tweet) {
 		u.addToFeed(tweet);
 	}
+	
+	public void setUpdateTime() {
+		updateTime = System.currentTimeMillis();
+	}
+	
+	public void setUpdateTime(long l) {
+		updateTime = l;
+	}
+	
+	public long getUpdateTime() {
+		return updateTime;
+	}
 
 	@Override
 	public void updateObservers(String tweet) {
 		addToFeed(tweet);
+		setUpdateTime();
 		for(User u : getFollowers()) {
 			update(u, tweet);
+			u.setUpdateTime(getUpdateTime());
 			uv.buildNewsFeed();
 		}
 	}

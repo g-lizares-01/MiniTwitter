@@ -15,6 +15,8 @@ package miniTWT;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.*;
 import javax.swing.tree.*;
 
@@ -25,7 +27,7 @@ public class AdminControlPanel extends JFrame {
 	private JScrollPane scrollTree;
 	private JTextField newUserId, newGroupId;
 	private JButton addUser, addGroup, openUserView;
-	private JButton showUserTotal, showGroupTotal, showMsgTotal, showPstvPercent;
+	private JButton showUserTotal, showGroupTotal, showMsgTotal, showPstvPercent, userGroupVerify, lastUpdated;
 	private DefaultMutableTreeNode root, currentTreeNode;
 	private String userId, groupId;
 	private static HashMap<String, User> allUsers = new HashMap<String, User>();
@@ -127,6 +129,22 @@ public class AdminControlPanel extends JFrame {
 		openUserView.setFocusable(false);
 		openUserView.addActionListener(new openUVListener());
 		panel.add(openUserView);
+		
+		userGroupVerify = new JButton("Verify User/Group IDs");
+		userGroupVerify.setBounds(320, 185, 455, 50);
+		userGroupVerify.setFont(topFont);
+		userGroupVerify.setForeground(darkPurple);
+		userGroupVerify.setFocusable(false);
+		userGroupVerify.addActionListener(new verifyListener());
+		panel.add(userGroupVerify);
+		
+		lastUpdated = new JButton("Find Last Updated User");
+		lastUpdated.setBounds(320, 250, 455, 50);
+		lastUpdated.setFont(topFont);
+		lastUpdated.setForeground(darkPurple);
+		lastUpdated.setFocusable(false);
+		lastUpdated.addActionListener(new lastUpdatedListener());
+		panel.add(lastUpdated);
 
 		//set up button to display number of users created
 		showUserTotal = new JButton("Show User Total");
@@ -262,6 +280,67 @@ public class AdminControlPanel extends JFrame {
 				allUsers.get(currentTreeNode.toString()).openUV();
 			}
 		}	
+	}
+	
+	//ActionListener for Verification Button
+	private class verifyListener implements ActionListener {
+		String verification = "";
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(allUsers.isEmpty() && allGroups.isEmpty()) {
+				popUp("There are no IDs to verify.");
+				return;
+			}
+			else {
+				for(Map.Entry<String, User> user : allUsers.entrySet()) {
+					String idCheck = (String)user.getKey();
+					if(idCheck.contains(" ")) {
+						popUp("Invalid IDs exist.");
+						verification = "false";
+						break;
+					}
+					for(Map.Entry<String, Group> group : allGroups.entrySet()) {
+						if(group.getKey().equals(idCheck)) {
+							popUp("Invalid IDs exist.");
+							verification = "false";
+							break;
+						}
+					}
+				}
+				for(Map.Entry<String, Group> group : allGroups.entrySet()) {
+					String idCheck = (String)group.getKey();
+					if(idCheck.contains(" ")) {
+						popUp("Invalid IDs exist.");
+						verification = "false";
+						break;
+					}
+				}
+				if(!verification.equals("false"))
+					popUp("All IDs are valid.");
+			}
+		}
+
+		
+	}
+	
+	//ActionListener for Find Last Updated button
+	private class lastUpdatedListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			User lastUpUser = null;
+			if(allUsers.isEmpty())
+				popUp("No users have been created!");
+			else {
+				lastUpUser = allUsers.entrySet().iterator().next().getValue();
+				for(Map.Entry<String, User> user : allUsers.entrySet()) {
+					if(user.getValue().getUpdateTime() > lastUpUser.getUpdateTime())
+						lastUpUser = user.getValue();
+				}
+				popUp(lastUpUser.getComponentId() + " was the last updated user!");
+			}
+		}
+		
 	}
 	
 	//ActionListener for UserTotal Button
